@@ -2,30 +2,24 @@ package subtask2
 
 class Combinator {
 
-    fun checkChooseFromArray(array: Array<Number>): Number? {
-        val elementsNumber: Long = array[1].toLong()
-        val remainder: Long = factorialOf(elementsNumber) / array[0].toLong()
-        val limit: Long = elementsNumber / 2
-        var currentNumber: Long = 1
-        var currentFactorial: Long = 1
-        var denominator: Long = factorialOf(elementsNumber - currentNumber)
+    fun checkChooseFromArray(array: Array<Int>): Int? {
+        val elementsNumber = array[1]
+        val remainder = factorialOf(elementsNumber) / array[0]
+        var currentFactorial = 1
 
-        while (remainder != denominator && currentNumber <= limit) {
-            currentNumber++
-            currentFactorial *= currentNumber
-            denominator = currentFactorial * factorialOf(elementsNumber - currentNumber)
+        for (k in 1..elementsNumber / 2) {
+            currentFactorial *= k
+            if (remainder == currentFactorial * factorialOf(elementsNumber - k)) {
+                return k
+            }
         }
 
-        return if (remainder == denominator) {
-            currentNumber.toInt()
-        } else {
-            null
-        }
+        return null
     }
 
-    private fun factorialOf(number: Long): Long {
-        if (number == 0L) {
-            return 1
+    private fun factorialOf(number: Int): Long {
+        if (number <= 1L) {
+            return 1L
         }
         var result: Long = 1
         for (i in 1..number) {

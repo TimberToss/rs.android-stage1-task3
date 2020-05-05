@@ -1,128 +1,113 @@
 package subtask3
 
+import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
 
 class ArrayCalculator {
-    private var array: Array<Int> by Delegates.notNull()
-    private var mainProduct = 1
-    private var secondaryProduct = 1
-    private var isNumberOfNegativesOdd = false
 
     fun maxProductOf(numberOfItems: Int, itemsFromArray: Array<Any>): Int {
-        array = itemsFromArray.filterIsInstance<Int>()
-            .sortedByDescending { kotlin.math.abs(it) }
-            .toTypedArray()
+        val intList = itemsFromArray.filterIsInstance<Int>().sortedByDescending { it.absoluteValue }
 
-        if (array.isEmpty()) {
+        if (intList.isEmpty()) {
             return 0
         }
 
-        if (numberOfItems >= array.size) {
-            return array.reduce(Int::times)
+        if (numberOfItems >= intList.size) {
+            return intList.reduce(Int::times)
         }
 
-        // TODO check zeros
-        val positiveList = array.filter { it > 0 }
-        val negativeList = array.filter { it < 0 }
+        positiveList = intList.filter { it > 0 }
+        negativeList = intList.filter { it < 0 }
 
-        val sizes = positiveList.size + negativeList.size
-
-        // zero check
-        if (sizes < array.size) {
-            if (sizes < numberOfItems) {
-                return 0
-            } else if (positiveList.isEmpty()) {
-                return 0
-            } else if (sizes == numberOfItems && negativeList.size % 2 == 1) {
-                return 0
-            }
-        }
-        var positiveIndex = 0
-        var negativeIndex = 0
-
-        if (positiveList.isEmpty()) {
-            val reversedNegativeList = negativeList.reversed()
-            repeat(numberOfItems) {
-                mainProduct *= reversedNegativeList[negativeIndex++]
-            }
-            return mainProduct
-        } else if (negativeList.isEmpty()) {
-            repeat(numberOfItems) {
-                mainProduct *= positiveList[positiveIndex++]
-            }
-            return mainProduct
+        if (zeroCheck(intList, numberOfItems)) {
+            return 0
         }
 
-        var counter = 0
+        positiveIndex = 0
+        negativeIndex = 0
+        product = 1
 
-        while (counter + 2 <= numberOfItems) {
+        if (positiveList.isEmpty() && numberOfItems % 2 == 1) {
+            return negativeList.takeLast(numberOfItems).reduce(Int::times)
+        }
 
-            if (positiveIndex + 1 == positiveList.size) {
-                val times = numberOfItems - counter
-                if (times % 2 == 0) {
-                    repeat(times) {
-                        mainProduct *= negativeList[negativeIndex++]
-                        if (negativeIndex == negativeList.size) {
-                            return@repeat
-                        }
-                    }
-                } else {
-                    mainProduct *= positiveList[positiveIndex]
-                    repeat(times - 1) {
-                        mainProduct *= negativeList[negativeIndex++]
-                    }
-                }
-                counter = numberOfItems
+        counter = 0
+
+        while (counter <= numberOfItems - 1) {
+
+            if (positiveIndex >= positiveList.size - 1) {
+                checkPositive(numberOfItems)
                 break
             }
-            if (negativeIndex + 1 >= negativeList.size) {
-                repeat(numberOfItems - counter) {
-                    mainProduct *= positiveList[positiveIndex++]
-                }
-                counter = numberOfItems
+
+            if (negativeIndex >= negativeList.size - 1) {
+                checkNegative(numberOfItems)
                 break
             }
 
             val positivePair = positiveList[positiveIndex] * positiveList[positiveIndex + 1]
             val negativePair = negativeList[negativeIndex] * negativeList[negativeIndex + 1]
 
-            // TODO maybe equality of pairs can be lead to errors
             if (positivePair >= negativePair) {
-                mainProduct *= positiveList[positiveIndex++]
+                product *= positiveList[positiveIndex++]
                 counter++
+
             } else {
-                mainProduct *= negativePair
+                product *= negativePair
                 negativeIndex += 2
                 counter += 2
             }
         }
 
         if (counter < numberOfItems) {
-            mainProduct *= positiveList[positiveIndex]
+            product *= positiveList[positiveIndex]
         }
 
+        return product
+    }
 
-//        while (counter < numberOfItems - 1) {
-//
-//            secondaryProduct *= array[i]
-//
-//            if (array[i] < 0) {
-//                if (isNumberOfNegativesOdd) {
-//                    mainProduct = secondaryProduct
-//                    isNumberOfNegativesOdd = false
-//                } else {
-//                    isNumberOfNegativesOdd = true
-//                }
-//            } else if (array[i] > 0) {
-//                mainProduct *= array[i]
-//                counter++
-//            }
-//            i++
-//        }
-//
-//        if (isNumberOfNegativesOdd) {
-//
-//        }
-        return mainProduct
+    private fun checkPositive(numberOfItems: Int) {
+        var times = numberOfItems - counter
+        counter = numberOfItems
+
+        if (times % 2 != 0) {
+            product *= positiveList[positiveIndex]
+            times--
+        }
+        if (times != 0) {
+            product *= negativeList.subList(negativeIndex, negativeIndex + times).reduce(Int::times)
+        }
+    }
+
+    private fun checkNegative(numberOfItems: Int) {
+        if (numberOfItems != counter) {
+            product *= positiveList.subList(positiveIndex, positiveIndex + numberOfItems - counter)
+                .reduce(Int::times)
+        }
+        counter = numberOfItems
+    }
+
+    private fun zeroCheck(intList: List<Int>, numberOfItems: Int): Boolean {
+        val sizes = positiveList.size + negativeList.size
+
+        if (sizes < intList.size) {                                         // check if zeros exist
+
+            if (sizes < numberOfItems                                       // we must to put zero
+                || positiveList.isEmpty() && numberOfItems % 2 == 1         // 0 > odd multiply of negatives
+                || sizes == numberOfItems && negativeList.size % 2 == 1     // 0 > odd multiply of negatives
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
+    companion object {
+        private lateinit var positiveList: List<Int>
+        private lateinit var negativeList: List<Int>
+        private var positiveIndex by Delegates.notNull<Int>()
+        private var negativeIndex by Delegates.notNull<Int>()
+        private var product by Delegates.notNull<Int>()
+        private var counter by Delegates.notNull<Int>()
     }
 }

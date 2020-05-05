@@ -140,4 +140,64 @@ class ArrayProductCalculatorTests {
         val sum = calculator.maxProductOf(6, arrayOf(1, 1, 1, 0, -1, -1, -1))
         assertEquals(0, sum) // number of negatives is odd and we need all non-zeros elements
     }
+
+    @Test
+    fun test23() {
+        val sum = calculator.maxProductOf(1, arrayOf(1, 0, -1))
+        assertEquals(1, sum)
+    }
+
+    @Test
+    fun test24() {
+        val sum = calculator.maxProductOf(1, arrayOf(-1, 0, 1))
+        assertEquals(1, sum)
+    }
+
+    @Test
+    fun test25() {
+        val sum = calculator.maxProductOf(1, arrayOf(-1, 0, -1))
+        assertEquals(0, sum)
+    }
+
+    @Test
+    fun test26() {
+        val sum = calculator.maxProductOf(1, arrayOf(-2, 0, 1))
+        assertEquals(1, sum)
+    }
+
+    @Test
+    fun test27() {
+        val sum = calculator.maxProductOf(1, arrayOf(-1, 1))
+        assertEquals(1, sum)
+    }
+
+    @Test
+    fun test28() {
+        val sum = calculator.maxProductOf(1, arrayOf(1, -1))
+        assertEquals(1, sum)
+    }
+
+    @Test
+    fun test29() {
+        val sum = calculator.maxProductOf(1, arrayOf(1, 0))
+        assertEquals(1, sum)
+    }
+
+    @Test
+    fun test30() {
+        val sum = calculator.maxProductOf(1, arrayOf(-1, 0))
+        assertEquals(0, sum)
+    }
+
+    @Test
+    fun test31() {
+        val sum = calculator.maxProductOf(3, arrayOf(-7, 0, -5, -3, -2, -2))
+        assertEquals(0, sum)
+    }
+
+    @Test
+    fun test32() {
+        val sum = calculator.maxProductOf(2, arrayOf(-7, 0, -5, -3, -2, -2))
+        assertEquals(35, sum)
+    }
 }

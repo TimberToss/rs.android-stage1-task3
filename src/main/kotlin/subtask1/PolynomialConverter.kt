@@ -1,59 +1,66 @@
 package subtask1
 
 import java.lang.StringBuilder
+import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
+import kotlin.system.measureNanoTime
 
 class PolynomialConverter {
 
-    private var lastIndex by Delegates.notNull<Int>()
-
-    fun convertToStringFrom(numbers: Array<Number>): String? {
+    fun convertToStringFrom(numbers: Array<Int>): String? {
         if (numbers.isEmpty()) {
             return null
         }
 
-        lastIndex = numbers.size - 1
-        return numbers.mapIndexed { index, value -> valueToString(index, value) }
-            .filter { it != ZERO }
-            .joinToString(separator = " ")
+        if (numbers.all { it == 0 }) {
+            return "0"
+        }
+
+        val lastIndex = numbers.size - 1
+        val result = StringBuilder()
+        isFirstResultNumber = true
+
+        for ((index, value) in numbers.withIndex()) {
+            if (value != 0) {
+                result.append(addSign(value))
+                    .append(addNumber(value, index == lastIndex))
+                    .append(addDegree(index, lastIndex))
+            }
+        }
+        return result.toString()
     }
 
-    private fun valueToString(index: Int, value: Number) =
-        if (value.toDouble() != 0.0) {
-            StringBuilder()
-                .append(addSign(value, index == 0))
-                .append(addDegree(index))
-                .toString()
+    private fun addSign(number: Int) =
+        if (isFirstResultNumber) {
+            isFirstResultNumber = false
+
+            if (number < 0) {
+                "-"
+            } else {
+                ""
+            }
+        } else if (number < 0) {
+            " - "
         } else {
-            ZERO
+            " + "
+        }
+    private fun addNumber(number: Int, isLastNumber: Boolean) =
+        if (number.absoluteValue == 1 && !isLastNumber) {
+            ""
+        } else if (number < 0) {
+            number.absoluteValue.toString()
+        } else {
+            number.toString()
         }
 
-    private fun addSign(number: Number, isFirstNumber: Boolean) =
-        if (number.toDouble() < 0.0) {
-            val string = deleteDigitOne(number.toString().substring(1, number.toString().length))
-            "- $string"
-        } else if (number.toDouble() > 0.0 && !isFirstNumber) {
-            "+ ${deleteDigitOne(number.toString())}"
-        } else {
-            deleteDigitOne(number.toString())
-        }
-
-    private fun addDegree(index: Int): String =
+    private fun addDegree(index: Int, lastIndex: Int) =
         when (lastIndex - index) {
             0 -> ""
             1 -> "x"
             else -> "x^${lastIndex - index}"
         }
 
-    private fun deleteDigitOne(string: String) =
-        if (string == "1" || string == "1.0") {
-            ""
-        } else {
-            string
-        }
-
-
     companion object {
-        private const val ZERO = "0.0"
+        private var isFirstResultNumber by Delegates.notNull<Boolean>()
     }
 }
