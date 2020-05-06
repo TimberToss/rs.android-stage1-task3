@@ -16,10 +16,10 @@ class ArrayCalculator {
             return intList.reduce(Int::times)
         }
 
-        positiveList = intList.filter { it > 0 }
-        negativeList = intList.filter { it < 0 }
+        val positiveList = intList.filter { it > 0 }
+        val negativeList = intList.filter { it < 0 }
 
-        if (zeroCheck(intList, numberOfItems)) {
+        if (zeroCheck(intList, numberOfItems, positiveList, negativeList)) {
             return 0
         }
 
@@ -36,12 +36,12 @@ class ArrayCalculator {
         while (counter <= numberOfItems - 1) {
 
             if (positiveIndex >= positiveList.size - 1) {
-                checkPositive(numberOfItems)
+                checkPositive(numberOfItems, positiveList, negativeList)
                 break
             }
 
             if (negativeIndex >= negativeList.size - 1) {
-                checkNegative(numberOfItems)
+                checkNegative(numberOfItems, positiveList)
                 break
             }
 
@@ -66,7 +66,12 @@ class ArrayCalculator {
         return product
     }
 
-    private fun checkPositive(numberOfItems: Int) {
+    private fun checkPositive(
+        numberOfItems: Int,
+        positiveList: List<Int>,
+        negativeList: List<Int>
+    ) {
+
         var times = numberOfItems - counter
         counter = numberOfItems
 
@@ -79,7 +84,7 @@ class ArrayCalculator {
         }
     }
 
-    private fun checkNegative(numberOfItems: Int) {
+    private fun checkNegative(numberOfItems: Int, positiveList: List<Int>) {
         if (numberOfItems != counter) {
             product *= positiveList.subList(positiveIndex, positiveIndex + numberOfItems - counter)
                 .reduce(Int::times)
@@ -87,7 +92,13 @@ class ArrayCalculator {
         counter = numberOfItems
     }
 
-    private fun zeroCheck(intList: List<Int>, numberOfItems: Int): Boolean {
+    private fun zeroCheck(
+        intList: List<Int>,
+        numberOfItems: Int,
+        positiveList: List<Int>,
+        negativeList: List<Int>
+    ): Boolean {
+
         val sizes = positiveList.size + negativeList.size
 
         if (sizes < intList.size) {                                         // check if zeros exist
@@ -103,8 +114,6 @@ class ArrayCalculator {
     }
 
     companion object {
-        private lateinit var positiveList: List<Int>
-        private lateinit var negativeList: List<Int>
         private var positiveIndex by Delegates.notNull<Int>()
         private var negativeIndex by Delegates.notNull<Int>()
         private var product by Delegates.notNull<Int>()

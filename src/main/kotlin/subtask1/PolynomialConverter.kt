@@ -1,6 +1,7 @@
 package subtask1
 
 import java.lang.StringBuilder
+import java.util.concurrent.CountDownLatch
 import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
 import kotlin.system.measureNanoTime
@@ -32,25 +33,25 @@ class PolynomialConverter {
 
     private fun addSign(number: Int) =
         if (isFirstResultNumber) {
-            isFirstResultNumber = false
 
+            isFirstResultNumber = false
             if (number < 0) {
                 "-"
             } else {
                 ""
             }
+
         } else if (number < 0) {
             " - "
         } else {
             " + "
         }
+
     private fun addNumber(number: Int, isLastNumber: Boolean) =
         if (number.absoluteValue == 1 && !isLastNumber) {
             ""
-        } else if (number < 0) {
-            number.absoluteValue.toString()
         } else {
-            number.toString()
+            number.absoluteValue.toString()
         }
 
     private fun addDegree(index: Int, lastIndex: Int) =

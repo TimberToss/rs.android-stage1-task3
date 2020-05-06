@@ -4,47 +4,37 @@ package subtask5
 class TelephoneFinder {
 
     fun findAllNumbersFromGivenNumber(number: String): Array<String>? {
-        if (number[0] == '-') {
-            return null
-        }
+
         val originalCharArray = number.toCharArray()
+        val result = mutableListOf<String>()
 
-        return number.toCharArray()
-            .mapIndexed { index, value -> checkNeighbours(index, value, originalCharArray) }
-            .flatten()
-            .toTypedArray()
-    }
+        for ((index, value) in number.toCharArray().withIndex()) {
 
-    private fun checkNeighbours(
-        index: Int,
-        symbol: Char,
-        originalCharArray: CharArray
-    ): List<String> {
+            val neighboursArray = neighbours[value] ?: return null
 
-        val list = mutableListOf<String>()
-        val number = Character.getNumericValue(symbol)
+            for (neighbour in neighboursArray) {
+                originalCharArray[index] = neighbour
+                result.add(String(originalCharArray))
+            }
 
-        for (i in neighbours[number]) {
-            originalCharArray[index] = i
-            list.add(String(originalCharArray))
+            originalCharArray[index] = value
         }
 
-        originalCharArray[index] = symbol
-        return list
+        return result.toTypedArray()
     }
 
     companion object {
-        private val neighbours = arrayOf(
-            arrayOf('8'),
-            arrayOf('2', '4'),
-            arrayOf('1', '3', '5'),
-            arrayOf('2', '6'),
-            arrayOf('1', '5', '7'),
-            arrayOf('2', '4', '6', '8'),
-            arrayOf('3', '5', '9'),
-            arrayOf('4', '8'),
-            arrayOf('5', '7', '9', '0'),
-            arrayOf('6', '8')
+        private val neighbours = mapOf(
+            '0' to arrayOf('8'),
+            '1' to arrayOf('2', '4'),
+            '2' to arrayOf('1', '3', '5'),
+            '3' to arrayOf('2', '6'),
+            '4' to arrayOf('1', '5', '7'),
+            '5' to arrayOf('2', '4', '6', '8'),
+            '6' to arrayOf('3', '5', '9'),
+            '7' to arrayOf('4', '8'),
+            '8' to arrayOf('5', '7', '9', '0'),
+            '9' to arrayOf('6', '8')
         )
     }
 }

@@ -4,27 +4,42 @@ package subtask4
 class SquareDecomposer {
 
     fun decomposeNumber(number: Int): Array<Int>? {
-        val result: MutableList<Long>? = recursiveDecompose(number.toLong(), number * number.toLong())
-        result?.removeAt(result.size - 1)
-        return result?.map { it.toInt() }?.toTypedArray()
+        val originalNumber = number.toLong()
+        return recursiveDecompose(
+            originalNumber,
+            originalNumber * originalNumber,
+            originalNumber
+        )?.map { it.toInt() }?.toTypedArray()
     }
 
-    private fun recursiveDecompose(currentNumber: Long, remainder: Long): MutableList<Long>? {
-        if (remainder == 0L) {
-            val result = mutableListOf<Long>()
-            result.add(currentNumber)
-            return result
-        }
+    private fun recursiveDecompose(
+        currentNumber: Long,
+        remainder: Long,
+        originalNumber: Long
+    ): MutableList<Long>? {
 
-        for (i in currentNumber - 1 downTo 1) {
-            if (remainder - i * i >= 0) {
-                val result = recursiveDecompose(i, remainder - i * i)
-                if (result != null) {
-                    result.add(currentNumber)
-                    return result
+        var result: MutableList<Long>? = null
+
+        if (remainder != 0L) {
+            for (i in currentNumber - 1 downTo 1) {
+                val nextRemainder = remainder - i * i
+
+                if (nextRemainder >= 0) {
+                    result = recursiveDecompose(i, nextRemainder, originalNumber)
+
+                    if (result != null) {
+                        if (currentNumber != originalNumber) {
+                            result.add(currentNumber)
+                        }
+                        break
+                    }
                 }
             }
+
+        } else {
+            result = mutableListOf()
+            result.add(currentNumber)
         }
-        return null
+        return result
     }
 }

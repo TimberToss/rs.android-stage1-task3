@@ -13,7 +13,6 @@ class Combinator {
                 return k
             }
         }
-
         return null
     }
 
